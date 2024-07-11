@@ -1,0 +1,70 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Test Before Making Container
+    runs-on: ubuntu-latest
+    env:
+      APP_SETTINGS: src.config.ProductionConfig
+      DATABASE_URL: ${{ secrets.POSTGRES_CONNECTION_STRING }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements.dev.txt
+      - name: Test with pytest
+        run: |
+            python -m pytest "src/tests" -p no:warnings -cov=com --cov-report=xml --cov-report=html
+            python -m flake8 src
+            python -m black src --check
+            python -m isort src --check-only
+          
+  build_and_push:
+    name: Build Docker Image and Push to Docker Hub
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Docker Login
+      uses: docker/login-action@v3.2.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Docker Metadata action
+      id: meta
+      uses: docker/metadata-action@v5.5.1
+      with:
+        images: tjsulllivan1/flasker-books
+        
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@v6.3.0
+      with:
+        context: .
+        file: ./Dockerfile.prod 
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+    # TODO: Figure this out later. Doesn't like the image name.
+    # - name: Generate artifact attestation
+    #   uses: actions/attest-build-provenance@v1
+    #   with:
+    #     subject-name: ${{ steps.push.outputs.digest }}
+    #     subject-digest: ${{ steps.push.outputs.digest }}
+    #     push-to-registry: true
+
+
+
