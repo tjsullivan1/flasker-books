@@ -12,7 +12,9 @@ def test_add_book(test_app: Flask, test_database: SQLAlchemy):
     client = test_app.test_client()
     resp = client.post(
         "/books",
-        data=json.dumps({"title": "The Omnivore's Dilemma", "author": "Michael Pollan"}),
+        data=json.dumps(
+            {"title": "The Omnivore's Dilemma", "author": "Michael Pollan"}
+        ),
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())
@@ -48,12 +50,16 @@ def test_add_book_duplicate_title(test_app: Flask, test_database: SQLAlchemy):
     client = test_app.test_client()
     client.post(
         "/books",
-        data=json.dumps({"title": "The Omnivore's Dilemma", "author": "Michael Pollan"}),
+        data=json.dumps(
+            {"title": "The Omnivore's Dilemma", "author": "Michael Pollan"}
+        ),
         content_type="application/json",
     )
     resp = client.post(
         "/books",
-        data=json.dumps({"title": "The Omnivore's Dilemma", "author": "Michael Pollan"}),
+        data=json.dumps(
+            {"title": "The Omnivore's Dilemma", "author": "Michael Pollan"}
+        ),
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())
