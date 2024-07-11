@@ -7,7 +7,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-
+  test:
+    name: Test Newly Created Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test with pytest
+        run: |
+            python -m pytest "src/tests" -p no:warnings
+            python -m flake8 src
+            python -m black src --check
+            python -m isort src --check-only
+          
   build_and_push:
     name: Build Docker Image and Push to Docker Hub
     runs-on: ubuntu-latest
@@ -47,18 +58,5 @@ jobs:
     #     subject-digest: ${{ steps.push.outputs.digest }}
     #     push-to-registry: true
 
-  test:
-    name: Test Newly Created Container
-    runs-on: ubuntu-latest
-    container:
-      image: tjsulllivan1/flasker-books:main
-    steps:
-      - uses: actions/checkout@v2
-      - name: Test with pytest
-        run: |
-            python -m pytest "src/tests" -p no:warnings
-            python -m flake8 src
-            python -m black src --check
-            python -m isort src --check-only
-          
+
 
