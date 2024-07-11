@@ -11,6 +11,7 @@ from sqlalchemy import (
     CheckConstraint,
     Integer,
 )
+from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 
 from src import db
@@ -52,7 +53,7 @@ class BookType(Enum):
 class Book(db.Model):
     __tablename__ = "books"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     title = Column(Text)
     author = Column(Text)
     genre = Column(Text)
@@ -71,3 +72,7 @@ class Book(db.Model):
     __table_args__ = (
         CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range"),
     )
+
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author

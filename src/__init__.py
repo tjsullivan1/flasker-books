@@ -33,6 +33,10 @@ def create_app(script_info=None):
 
     app.register_blueprint(users_blueprint)
 
+    from src.api.books import books_blueprint
+
+    app.register_blueprint(books_blueprint)
+
     # shell context for flask cli
     @app.shell_context_processor
     def ctx():

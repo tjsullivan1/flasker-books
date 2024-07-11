@@ -3,7 +3,8 @@
 import pytest
 
 from src import create_app, db
-from src.api.models import User
+from src.api.models import User, Book
+
 
 @pytest.fixture(scope="module")
 def test_app():
@@ -21,11 +22,23 @@ def test_database():
     db.drop_all()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def add_user():
     def _add_user(username, email):
         user = User(username=username, email=email)
         db.session.add(user)
         db.session.commit()
         return user
+
     return _add_user
+
+
+@pytest.fixture(scope="function")
+def add_book():
+    def _add_book(title, author):
+        book = Book(title=title, author=author)
+        db.session.add(book)
+        db.session.commit()
+        return book
+
+    return _add_book

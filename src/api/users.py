@@ -47,6 +47,7 @@ class UsersList(Resource):
     def get(self):
         return User.query.all(), 200
 
+
 class Users(Resource):
 
     @api.marshal_with(user)
