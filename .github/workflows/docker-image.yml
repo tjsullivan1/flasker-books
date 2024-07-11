@@ -8,8 +8,11 @@ on:
 
 jobs:
   test:
-    name: Test Newly Created Container
+    name: Test Before Making Container
     runs-on: ubuntu-latest
+    env:
+      APP_SETTINGS: src.config.ProdConfig
+      DATABASE_URL: ${{ secrets.POSTGRES_CONNECTION_STRING }}
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
