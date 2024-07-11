@@ -1,19 +1,13 @@
 # src/api/models.py
 
 from enum import Enum
-from sqlalchemy.sql import func
-from sqlalchemy import (
-    Column,
-    Text,
-    String,
-    DateTime,
-    Enum as SQLEnum,
-    CheckConstraint,
-    Integer,
-    Boolean,
-)
-from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
+
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import Integer, String, Text
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 
 from src import db
 
