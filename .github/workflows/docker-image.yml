@@ -11,7 +11,7 @@ jobs:
     name: Test Before Making Container
     runs-on: ubuntu-latest
     env:
-      APP_SETTINGS: src.config.ProdConfig
+      APP_SETTINGS: src.config.ProductionConfig
       DATABASE_URL: ${{ secrets.POSTGRES_CONNECTION_STRING }}
     steps:
       - uses: actions/checkout@v2
