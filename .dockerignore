@@ -2,3 +2,5 @@
 Dockerfile
 Dockerfile.prod
 .env
+htmlcov
+.coverage
