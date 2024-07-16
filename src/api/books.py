@@ -65,6 +65,42 @@ class Books(Resource):
             api.abort(404, f"Book {book_id} does not exist")
         return book, 200
 
+    def delete(self, book_id):
+        response_object = {}
+        book = Book.query.filter_by(id=book_id).first()
+
+        if not book:
+            api.abort(404, f"Book {book_id} does not exist")
+
+        db.session.delete(book)
+        db.session.commit()
+
+        response_object["message"] = f"{book.title} was removed!"
+        return response_object, 200
+
+    @api.expect(book, validate=True)
+    def put(self, book_id):
+        post_data = request.get_json()
+        author = post_data.get("author")
+        title = post_data.get("title")
+        response_object = {}
+
+        book = Book.query.filter_by(id=book_id).first()
+        if not book:
+            api.abort(404, f"Book {book_id} does not exist")
+
+        if Book.query.filter_by(title=title).first():
+            response_object["message"] = "Sorry. That book already exists."
+            return response_object, 400
+
+        book.author = author
+        book.title = title
+        db.session.commit()
+
+        response_object["message"] = f"{book.id} was updated!"
+        return response_object, 200
+
+
 
 api.add_resource(BookList, "/books")
 api.add_resource(Books, "/books/<string:book_id>")
