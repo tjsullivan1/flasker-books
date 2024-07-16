@@ -56,7 +56,7 @@ jobs:
         context: .
         file: ./Dockerfile.prod 
         push: true
-        tags: tjsulllivan1/flasker-books:latest
+        tags: tjsulllivan1/flasker-books:${{ github.sha }}
         labels: ${{ steps.meta.outputs.labels }}
     # TODO: Figure this out later. Doesn't like the image name.
     # - name: Generate artifact attestation
