@@ -25,4 +25,4 @@ jobs:
         app-name: 'dev-flasker-books'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_1aac6b18afb84949b7ac7c6df6b144f1 }}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_6f595291c48047a89def8b25560103d2 }}/tjsulllivan1/flasker-books:${{ github.sha }}'
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_6f595291c48047a89def8b25560103d2 }}/flasker-books:${{ github.sha }}'
