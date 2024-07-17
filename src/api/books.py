@@ -101,6 +101,5 @@ class Books(Resource):
         return response_object, 200
 
 
-
 api.add_resource(BookList, "/books")
 api.add_resource(Books, "/books/<string:book_id>")

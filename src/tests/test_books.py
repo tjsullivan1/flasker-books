@@ -102,7 +102,6 @@ def test_all_books(test_app, test_database, add_book):
     assert "Ryan Holliday" in data[1]["author"]
 
 
-
 def test_remove_book(test_app, test_database, add_book):
     test_database.session.query(Book).delete()
     book = add_book("book-to-be-removed", "remove-author")
@@ -136,7 +135,9 @@ def test_update_book(test_app, test_database, add_book):
     client = test_app.test_client()
     resp_one = client.put(
         f"/books/{book.id}",
-        data=json.dumps({"title": "This is an Updated Title", "author": "Updated Author"}),
+        data=json.dumps(
+            {"title": "This is an Updated Title", "author": "Updated Author"}
+        ),
         content_type="application/json",
     )
     data = json.loads(resp_one.data.decode())
@@ -153,10 +154,20 @@ def test_update_book(test_app, test_database, add_book):
 @pytest.mark.parametrize(
     "book_id, payload, status_code, message",
     [
-        ['0787133b-cb55-4a31-9480-1e04b7b72899', {}, 400, "Input payload validation failed"],
-        ['0787133b-cb55-4a31-9480-1e04b7b72897', {"tite": "Invalid Title"}, 400, "Input payload validation failed"],
         [
-            '0787133b-cb55-4a31-9480-1e04b7b72898',
+            "0787133b-cb55-4a31-9480-1e04b7b72899",
+            {},
+            400,
+            "Input payload validation failed",
+        ],
+        [
+            "0787133b-cb55-4a31-9480-1e04b7b72897",
+            {"tite": "Invalid Title"},
+            400,
+            "Input payload validation failed",
+        ],
+        [
+            "0787133b-cb55-4a31-9480-1e04b7b72898",
             {"title": "Invalid Title", "author": "Invalid User"},
             404,
             "Book 0787133b-cb55-4a31-9480-1e04b7b72898 does not exist",
@@ -190,4 +201,3 @@ def test_update_book_duplicate_email(test_app, test_database, add_book):
     data = json.loads(resp.data.decode())
     assert resp.status_code == 400
     assert "Sorry. That book already exists." in data["message"]
-
