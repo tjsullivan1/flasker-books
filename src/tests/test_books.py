@@ -2,8 +2,8 @@
 
 
 import json
-import pytest
 
+import pytest
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
