@@ -1,5 +1,6 @@
+##################### BUILDER #####################
 # pull official base image
-FROM python:3.12.0-slim-bookworm
+FROM python:3.12.0-slim-bookworm as builder
 
 # set working directory
 WORKDIR /usr/src/app
@@ -7,18 +8,49 @@ WORKDIR /usr/src/app
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV FLASK_DEBUG 0
-ENV FLASK_ENV production
-ENV APP_SETTINGS src.config.ProductionConfig
 
 # install system dependencies
 RUN apt-get update \
   && apt-get -y install netcat-traditional gcc postgresql \
   && apt-get clean
 
-# add and install requirements
+# install dependencies
+RUN pip install --upgrade pip
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+# lint
+COPY . .
+RUN pip install black==23.11.0 flake8==6.1.0 isort==5.12.0
+RUN flake8 src
+RUN black src --check
+RUN isort src --check-only
+
+
+##################### RUNNER #####################
+# pull official base image
+FROM python:3.12.0-slim-bookworm
+
+# set working directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV FLASK_DEBUG 0
+ENV FLASK_ENV production
+ENV APP_SETTINGS src.config.ProductionConfig
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependencies
+RUN apt-get update \
+  && apt-get -y install netcat-traditional gcc postgresql \
+  && apt-get clean
+  
+# install dependencies
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache /wheels/*
 
 # add app
 COPY . .
