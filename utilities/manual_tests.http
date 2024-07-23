@@ -1,0 +1,27 @@
+// Test all users
+GET https://dev-flasker-books.azurewebsites.net/users
+
+//
+// Test single user
+GET https://dev-flasker-books.azurewebsites.net/users/1
+
+// Test creating a user
+POST https://dev-flasker-books.azurewebsites.net/users
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "test@testingmanually.com"
+}
+
+// Test updating a user
+PUT https://dev-flasker-books.azurewebsites.net/users/3
+Content-Type: application/json
+
+{
+    "username": "foo",
+    "email": "foo@bar.com"
+}
+
+// DELETE a user
+DELETE https://dev-flasker-books.azurewebsites.net/users/3
