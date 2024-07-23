@@ -6,3 +6,4 @@ psycopg2-binary==2.9.9
 gunicorn==21.2.0
 python-dotenv
 pytest-cov==4.1.0
+pytest-xdist==3.5.0
