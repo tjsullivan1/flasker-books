@@ -40,7 +40,7 @@ class UsersList(Resource):
         email = post_data.get("email")
         response_object = {}
 
-        user =  get_user_by_email(email)
+        user = get_user_by_email(email)
         if user:
             response_object["message"] = "Sorry. That email already exists."
             return response_object, 400

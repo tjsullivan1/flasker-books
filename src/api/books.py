@@ -6,6 +6,14 @@ from flask_restx import Api, Resource, fields
 
 from src import db
 from src.api.models import Book
+from src.api.crud import (  # isort:skip
+    get_all_books,
+    get_book_by_id,
+    get_book_by_title,
+    add_book,
+    update_book,
+    delete_book,
+)
 
 books_blueprint = Blueprint("books", __name__)
 api = Api(books_blueprint)
@@ -40,40 +48,38 @@ class BookList(Resource):
         author = post_data.get("author")
         response_object = {}
 
-        book = Book.query.filter_by(title=title).first()
+        book = get_book_by_title(title)
         if book:
             response_object["message"] = "Sorry. That title already exists."
             return response_object, 400
 
-        db.session.add(Book(title=title, author=author))
-        db.session.commit()
+        add_book(title, author)
 
         response_object["message"] = f"{title} was added!"
         return response_object, 201
 
     @api.marshal_with(book, as_list=True)
     def get(self):
-        return Book.query.all(), 200
+        return get_all_books(), 200
 
 
 class Books(Resource):
 
     @api.marshal_with(book)
     def get(self, book_id):
-        book = Book.query.filter_by(id=book_id).first()
+        book = get_book_by_id(book_id)
         if not book:
             api.abort(404, f"Book {book_id} does not exist")
         return book, 200
 
     def delete(self, book_id):
         response_object = {}
-        book = Book.query.filter_by(id=book_id).first()
+        book = get_book_by_id(book_id)
 
         if not book:
             api.abort(404, f"Book {book_id} does not exist")
 
-        db.session.delete(book)
-        db.session.commit()
+        delete_book(book)
 
         response_object["message"] = f"{book.title} was removed!"
         return response_object, 200
@@ -85,11 +91,11 @@ class Books(Resource):
         title = post_data.get("title")
         response_object = {}
 
-        book = Book.query.filter_by(id=book_id).first()
+        book = get_book_by_id(book_id)
         if not book:
             api.abort(404, f"Book {book_id} does not exist")
 
-        if Book.query.filter_by(title=title).first():
+        if get_book_by_title(title):
             response_object["message"] = "Sorry. That book already exists."
             return response_object, 400
 
