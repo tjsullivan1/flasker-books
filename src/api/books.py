@@ -2,7 +2,7 @@
 
 
 from flask import Blueprint, request
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, Namespace
 
 from src import db  # noqa: F401
 from src.api.models import Book  # noqa: F401
@@ -16,11 +16,10 @@ from src.api.crud import (  # isort:skip
     delete_book,
 )
 
-books_blueprint = Blueprint("books", __name__)
-api = Api(books_blueprint)
+books_namespace = Namespace("books")
 
 
-book = api.model(
+book = books_namespace.model(
     "Book",
     {
         "id": fields.String(readOnly=True),
@@ -42,7 +41,7 @@ book = api.model(
 
 class BookList(Resource):
 
-    @api.expect(book, validate=True)
+    @books_namespace.expect(book, validate=True)
     def post(self):
         post_data = request.get_json()
         title = post_data.get("title")
@@ -59,18 +58,18 @@ class BookList(Resource):
         response_object["message"] = f"{title} was added!"
         return response_object, 201
 
-    @api.marshal_with(book, as_list=True)
+    @books_namespace.marshal_with(book, as_list=True)
     def get(self):
         return get_all_books(), 200
 
 
 class Books(Resource):
 
-    @api.marshal_with(book)
+    @books_namespace.marshal_with(book)
     def get(self, book_id):
         book = get_book_by_id(book_id)
         if not book:
-            api.abort(404, f"Book {book_id} does not exist")
+            books_namespace.abort(404, f"Book {book_id} does not exist")
         return book, 200
 
     def delete(self, book_id):
@@ -78,14 +77,14 @@ class Books(Resource):
         book = get_book_by_id(book_id)
 
         if not book:
-            api.abort(404, f"Book {book_id} does not exist")
+            books_namespace.abort(404, f"Book {book_id} does not exist")
 
         delete_book(book)
 
         response_object["message"] = f"{book.title} was removed!"
         return response_object, 200
 
-    @api.expect(book, validate=True)
+    @books_namespace.expect(book, validate=True)
     def put(self, book_id):
         post_data = request.get_json()
         author = post_data.get("author")
@@ -94,7 +93,7 @@ class Books(Resource):
 
         book = get_book_by_id(book_id)
         if not book:
-            api.abort(404, f"Book {book_id} does not exist")
+            books_namespace.abort(404, f"Book {book_id} does not exist")
 
         if get_book_by_title(title):
             response_object["message"] = "Sorry. That book already exists."
@@ -106,5 +105,5 @@ class Books(Resource):
         return response_object, 200
 
 
-api.add_resource(BookList, "/books")
-api.add_resource(Books, "/books/<string:book_id>")
+books_namespace.add_resource(BookList, "")
+books_namespace.add_resource(Books, "/<string:book_id>")
