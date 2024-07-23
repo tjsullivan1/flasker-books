@@ -32,8 +32,16 @@ user = users_namespace.model(
 
 class UsersList(Resource):
 
+    @users_namespace.marshal_with(user, as_list=True)
+    def get(self):
+        """Returns all users"""
+        return get_all_users(), 200
+    
     @users_namespace.expect(user, validate=True)
+    @users_namespace.response(201, "<user_email> was added!")
+    @users_namespace.response(400, "Sorry. That email already exists.")
     def post(self):
+        """Creates a new user."""
         post_data = request.get_json()
         username = post_data.get("username")
         email = post_data.get("email")
@@ -49,21 +57,24 @@ class UsersList(Resource):
         response_object["message"] = f"{email} was added!"
         return response_object, 201
 
-    @users_namespace.marshal_with(user, as_list=True)
-    def get(self):
-        return get_all_users(), 200
-
 
 class Users(Resource):
 
     @users_namespace.marshal_with(user)
+    @users_namespace.response(200, "Success")
+    @users_namespace.response(404, "User <user_id> does not exist")
     def get(self, user_id):
+        """Returns a single user."""
         user = get_user_by_id(user_id)
         if not user:
             users_namespace.abort(404, f"User {user_id} does not exist")
         return user, 200
 
+
+    @users_namespace.response(200, "<user_id> was removed!")
+    @users_namespace.response(404, "User <user_id> does not exist")
     def delete(self, user_id):
+        """Deletes a user"""
         response_object = {}
         user = get_user_by_id(user_id)
 
@@ -76,7 +87,11 @@ class Users(Resource):
         return response_object, 200
 
     @users_namespace.expect(user, validate=True)
+    @users_namespace.response(200, "<user_id> was updated!")
+    @users_namespace.response(400, "Sorry. That email already exists.")
+    @users_namespace.response(404, "User <user_id> does not exist")
     def put(self, user_id):
+        """Updates a user."""
         post_data = request.get_json()
         username = post_data.get("username")
         email = post_data.get("email")
