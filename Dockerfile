@@ -15,7 +15,8 @@ RUN apt-get update \
 
 # add and install requirements
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+COPY ./requirements.dev.txt .
+RUN pip install -r requirements.dev.txt
 
 # add app
 COPY . .
