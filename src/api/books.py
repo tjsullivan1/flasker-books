@@ -5,7 +5,7 @@ from flask import Blueprint, request
 from flask_restx import Api, Resource, fields
 
 from src import db  # noqa: F401
-from src.api.models import Book # noqa: F401
+from src.api.models import Book  # noqa: F401
 
 from src.api.crud import (  # isort:skip
     get_all_books,
