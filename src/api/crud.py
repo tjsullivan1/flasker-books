@@ -2,7 +2,7 @@
 
 
 from src import db
-from src.api.models import User, Book
+from src.api.models import Book, User
 
 
 def get_all_users():

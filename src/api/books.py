@@ -6,6 +6,7 @@ from flask_restx import Api, Resource, fields
 
 from src import db
 from src.api.models import Book
+
 from src.api.crud import (  # isort:skip
     get_all_books,
     get_book_by_id,
@@ -99,9 +100,7 @@ class Books(Resource):
             response_object["message"] = "Sorry. That book already exists."
             return response_object, 400
 
-        book.author = author
-        book.title = title
-        db.session.commit()
+        update_book(book, title, author)
 
         response_object["message"] = f"{book.id} was updated!"
         return response_object, 200
