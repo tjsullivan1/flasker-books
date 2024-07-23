@@ -2,9 +2,9 @@
 
 from flask_restx import Api
 
+from src.api.books import books_namespace
 from src.api.ping import ping_namespace
 from src.api.users import users_namespace
-from src.api.books import books_namespace
 
 api = Api(version="1.0", title="My API", doc="/doc")
 

@@ -1,8 +1,8 @@
 # src/api/users.py
 
 
-from flask import Blueprint, request
-from flask_restx import Api, Resource, fields, Namespace
+from flask import request
+from flask_restx import Namespace, Resource, fields
 
 from src import db  # noqa: F401
 from src.api.models import User  # noqa: F401
@@ -36,7 +36,7 @@ class UsersList(Resource):
     def get(self):
         """Returns all users"""
         return get_all_users(), 200
-    
+
     @users_namespace.expect(user, validate=True)
     @users_namespace.response(201, "<user_email> was added!")
     @users_namespace.response(400, "Sorry. That email already exists.")
@@ -69,7 +69,6 @@ class Users(Resource):
         if not user:
             users_namespace.abort(404, f"User {user_id} does not exist")
         return user, 200
-
 
     @users_namespace.response(200, "<user_id> was removed!")
     @users_namespace.response(404, "User <user_id> does not exist")

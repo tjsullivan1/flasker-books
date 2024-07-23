@@ -26,6 +26,7 @@ def create_app(script_info=None):
 
     # register api
     from src.api import api
+
     api.init_app(app)
 
     # shell context for flask cli

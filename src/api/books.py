@@ -1,8 +1,8 @@
 # src/api/users.py
 
 
-from flask import Blueprint, request
-from flask_restx import Api, Resource, fields, Namespace
+from flask import request
+from flask_restx import Namespace, Resource, fields
 
 from src import db  # noqa: F401
 from src.api.models import Book  # noqa: F401
@@ -40,12 +40,11 @@ book = books_namespace.model(
 
 
 class BookList(Resource):
-    
+
     @books_namespace.marshal_with(book, as_list=True)
     def get(self):
         """Returns all books"""
         return get_all_books(), 200
-    
 
     @books_namespace.expect(book, validate=True)
     @books_namespace.response(201, "<title> was added!")
@@ -66,8 +65,6 @@ class BookList(Resource):
 
         response_object["message"] = f"{title} was added!"
         return response_object, 201
-
-
 
 
 class Books(Resource):
