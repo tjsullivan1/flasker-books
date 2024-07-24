@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+    <header>
+        <h1>
+            <all-caps>booker.app</all-caps>
+            <sub-title>A Demo Book Tracking Application</sub-title>
+        </h1>
+        <div hx-boost="true" id="navbar">
+            <div class="navbar">
+                <div class="navbar-section">
+                    <a href="/" class="navbar-brand mr-2">Booker</a>
+                    <a href="/about" class="btn btn-link">About</a>
+                    <a href="/settings" class="btn btn-link">Settings</a>
+                </div>
+                <div class="navbar-section">
+                    <div class="dropdown dropdown-right">
+                        <a href="#" class="btn btn-link dropdown-toggle">User</a>
+                        <ul class="menu">
+                            <li><a href="#" class="menu-item">Profile</a></li>
+                            <li><a href="#" class="menu-item">Settings</a></li>
+                            <li><a href="#" class="menu-item">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endblock %}
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer">
+        {% block footer %}
+        &copy; Copyright 2023 by <a href="https://linkedin.com/in/tjsullivan1/">you</a>.
+        {% endblock %}
+    </div>
+</body>
+</html>

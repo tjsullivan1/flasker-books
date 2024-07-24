@@ -1,0 +1,20 @@
+{% extends "shared/_base.html" %}
+{% block title %}Booker App - {{ page_name }}{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://the.missing.style/v0.2.0/missing.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
+    <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/_hyperscript-0.9.7.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rsjs-menu.js') }}" type="module"></script>
+    <script defer src="https://unpkg.com/alpinejs@3/dist/cdn.min.js"></script>
+{% endblock %}
+<body>
+<main>
+    {% block header %}
+     {{ super() }}
+    {% endblock %}
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>
