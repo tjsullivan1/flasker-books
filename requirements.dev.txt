@@ -1,8 +1,9 @@
+
+-r requirements.txt
+bandit
 black
-isort
 flake8
+isort
 pytest
 pytest-cov==4.1.0
 pytest-xdist==3.5.0
-
--r requirements.txt

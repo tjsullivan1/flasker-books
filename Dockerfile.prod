@@ -21,11 +21,11 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 
 # lint
 COPY . .
-RUN pip install black==24.4.2 flake8==7.1.0 isort==5.13.2
+RUN pip install black==24.4.2 flake8==7.1.0 isort==5.13.2 bandit==1.7.9
 RUN flake8 src
 RUN black src --check
 RUN isort src --check-only
-
+RUN bandit -r src -c bandit.yaml -v
 
 ##################### RUNNER #####################
 # pull official base image
@@ -45,7 +45,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
   && apt-get -y install netcat-traditional gcc postgresql \
   && apt-get clean
-  
+
 # install dependencies
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
