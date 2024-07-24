@@ -16,10 +16,10 @@ from src.api.crud import (  # isort:skip
     delete_book,
 )
 
-books_namespace = Namespace("books")
+books_ns = Namespace("books")
 
 
-book = books_namespace.model(
+book = books_ns.model(
     "Book",
     {
         "id": fields.String(readOnly=True),
@@ -41,14 +41,14 @@ book = books_namespace.model(
 
 class BookList(Resource):
 
-    @books_namespace.marshal_with(book, as_list=True)
+    @books_ns.marshal_with(book, as_list=True)
     def get(self):
         """Returns all books"""
         return get_all_books(), 200
 
-    @books_namespace.expect(book, validate=True)
-    @books_namespace.response(201, "<title> was added!")
-    @books_namespace.response(400, "Sorry. That title already exists.")
+    @books_ns.expect(book, validate=True)
+    @books_ns.response(201, "<title> was added!")
+    @books_ns.response(400, "Sorry. That title already exists.")
     def post(self):
         """Creates a new book."""
         post_data = request.get_json()
@@ -69,35 +69,35 @@ class BookList(Resource):
 
 class Books(Resource):
 
-    @books_namespace.marshal_with(book)
-    @books_namespace.response(200, "Success")
-    @books_namespace.response(404, "Book <book_id> does not exist")
+    @books_ns.marshal_with(book)
+    @books_ns.response(200, "Success")
+    @books_ns.response(404, "Book <book_id> does not exist")
     def get(self, book_id):
         """Returns a single book"""
         book = get_book_by_id(book_id)
         if not book:
-            books_namespace.abort(404, f"Book {book_id} does not exist")
+            books_ns.abort(404, f"Book {book_id} does not exist")
         return book, 200
 
-    @books_namespace.response(200, "<book_id> was removed!")
-    @books_namespace.response(404, "Book <book_id> does not exist")
+    @books_ns.response(200, "<book_id> was removed!")
+    @books_ns.response(404, "Book <book_id> does not exist")
     def delete(self, book_id):
         """Removes a single book"""
         response_object = {}
         book = get_book_by_id(book_id)
 
         if not book:
-            books_namespace.abort(404, f"Book {book_id} does not exist")
+            books_ns.abort(404, f"Book {book_id} does not exist")
 
         delete_book(book)
 
         response_object["message"] = f"{book.title} was removed!"
         return response_object, 200
 
-    @books_namespace.expect(book, validate=True)
-    @books_namespace.response(200, "<book_id> was updated!")
-    @books_namespace.response(404, "Book <book_id> does not exist")
-    @books_namespace.response(400, "Sorry. That book already exists.")
+    @books_ns.expect(book, validate=True)
+    @books_ns.response(200, "<book_id> was updated!")
+    @books_ns.response(404, "Book <book_id> does not exist")
+    @books_ns.response(400, "Sorry. That book already exists.")
     def put(self, book_id):
         """Updates a book"""
         post_data = request.get_json()
@@ -107,7 +107,7 @@ class Books(Resource):
 
         book = get_book_by_id(book_id)
         if not book:
-            books_namespace.abort(404, f"Book {book_id} does not exist")
+            books_ns.abort(404, f"Book {book_id} does not exist")
 
         if get_book_by_title(title):
             response_object["message"] = "Sorry. That book already exists."
@@ -119,6 +119,6 @@ class Books(Resource):
         return response_object, 200
 
 
-books_namespace.add_resource(BookList, "")
+books_ns.add_resource(BookList, "")
 # TODO: I think that string: can be replaced with uuid:
-books_namespace.add_resource(Books, "/<string:book_id>")
+books_ns.add_resource(Books, "/<string:book_id>")

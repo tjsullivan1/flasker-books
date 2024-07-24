@@ -67,7 +67,3 @@ class Book(db.Model):
     __table_args__ = (
         CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range"),
     )
-
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
