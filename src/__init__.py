@@ -35,13 +35,9 @@ def create_app(script_info=None):
 
     api.init_app(app)
 
-    @app.route("/")
-    def index():
-        return "Hello World!"
+    from src.views import home
 
-    @app.route("/stocks/")
-    def stocks():
-        return "<h2>Stock List...</h2>"
+    app.register_blueprint(home.blueprint)
 
     # shell context for flask cli
     @app.shell_context_processor
