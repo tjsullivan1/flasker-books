@@ -7,7 +7,7 @@ import pytest
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from src.api.models import Book
+from src.models.models import Book
 
 
 def test_add_book(test_app: Flask, test_database: SQLAlchemy):

@@ -7,7 +7,7 @@ import pytest
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from src.api.models import User
+from src.models.models import User
 
 
 def test_add_user(test_app: Flask, test_database: SQLAlchemy):
