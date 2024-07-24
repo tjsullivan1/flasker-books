@@ -21,7 +21,7 @@ def test_add_user(test_app, monkeypatch):
 
     client = test_app.test_client()
     resp = client.post(
-        "/users",
+        "/api/users",
         data=json.dumps({"username": "michael", "email": "michael@testdriven.io"}),
         content_type="application/json",
     )
@@ -33,7 +33,7 @@ def test_add_user(test_app, monkeypatch):
 def test_add_user_invalid_json(test_app):
     client = test_app.test_client()
     resp = client.post(
-        "/users",
+        "/api/users",
         data=json.dumps({}),
         content_type="application/json",
     )
@@ -45,7 +45,7 @@ def test_add_user_invalid_json(test_app):
 def test_add_user_invalid_json_keys(test_app, monkeypatch):
     client = test_app.test_client()
     resp = client.post(
-        "/users",
+        "/api/users",
         data=json.dumps({"email": "john@testdriven.io"}),
         content_type="application/json",
     )
@@ -65,7 +65,7 @@ def test_add_user_duplicate_email(test_app, monkeypatch):
     monkeypatch.setattr(src.api.users, "add_user", mock_add_user)
     client = test_app.test_client()
     resp = client.post(
-        "/users",
+        "/api/users",
         data=json.dumps({"username": "michael", "email": "michael@testdriven.io"}),
         content_type="application/json",
     )
@@ -85,7 +85,7 @@ def test_single_user(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.users, "get_user_by_id", mock_get_user_by_id)
     client = test_app.test_client()
-    resp = client.get("/users/1")
+    resp = client.get("/api/users/1")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 200
     assert "jeffrey" in data["username"]
@@ -98,7 +98,7 @@ def test_single_user_incorrect_id(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.users, "get_user_by_id", mock_get_user_by_id)
     client = test_app.test_client()
-    resp = client.get("/users/999")
+    resp = client.get("/api/users/999")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 404
     assert "User 999 does not exist" in data["message"]
@@ -123,7 +123,7 @@ def test_all_users(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.users, "get_all_users", mock_get_all_users)
     client = test_app.test_client()
-    resp = client.get("/users")
+    resp = client.get("/api/users")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 200
     assert len(data) == 2
@@ -156,7 +156,7 @@ def test_remove_user(test_app, monkeypatch):
     monkeypatch.setattr(src.api.users, "get_user_by_id", mock_get_user_by_id)
     monkeypatch.setattr(src.api.users, "delete_user", mock_delete_user)
     client = test_app.test_client()
-    resp_two = client.delete("/users/1")
+    resp_two = client.delete("/api/users/1")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
     assert "remove-me@testdriven.io was removed!" in data["message"]
@@ -168,7 +168,7 @@ def test_remove_user_incorrect_id(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.users, "get_user_by_id", mock_get_user_by_id)
     client = test_app.test_client()
-    resp = client.delete("/users/999")
+    resp = client.delete("/api/users/999")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 404
     assert "User 999 does not exist" in data["message"]
@@ -196,14 +196,14 @@ def test_update_user(test_app, monkeypatch):
     monkeypatch.setattr(src.api.users, "update_user", mock_update_user)
     client = test_app.test_client()
     resp_one = client.put(
-        "/users/1",
+        "/api/users/1",
         data=json.dumps({"username": "me", "email": "me@testdriven.io"}),
         content_type="application/json",
     )
     data = json.loads(resp_one.data.decode())
     assert resp_one.status_code == 200
     assert "1 was updated!" in data["message"]
-    resp_two = client.get("/users/1")
+    resp_two = client.get("/api/users/1")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
     assert "me" in data["username"]
@@ -232,7 +232,7 @@ def test_update_user_invalid(
     monkeypatch.setattr(src.api.users, "get_user_by_id", mock_get_user_by_id)
     client = test_app.test_client()
     resp = client.put(
-        f"/users/{user_id}",
+        f"/api/users/{user_id}",
         data=json.dumps(payload),
         content_type="application/json",
     )
@@ -263,7 +263,7 @@ def test_update_user_duplicate_email(test_app, monkeypatch):
     monkeypatch.setattr(src.api.users, "update_user", mock_update_user)
     client = test_app.test_client()
     resp = client.put(
-        "/users/1",
+        "/api/users/1",
         data=json.dumps({"username": "me", "email": "me@testdriven.io"}),
         content_type="application/json",
     )

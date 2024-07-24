@@ -21,7 +21,7 @@ def test_add_book(test_app, monkeypatch):
 
     client = test_app.test_client()
     resp = client.post(
-        "/books",
+        "/api/books",
         data=json.dumps({"title": "Cooked", "author": "Michael Pollan"}),
         content_type="application/json",
     )
@@ -33,7 +33,7 @@ def test_add_book(test_app, monkeypatch):
 def test_add_book_invalid_json(test_app):
     client = test_app.test_client()
     resp = client.post(
-        "/books",
+        "/api/books",
         data=json.dumps({}),
         content_type="application/json",
     )
@@ -45,7 +45,7 @@ def test_add_book_invalid_json(test_app):
 def test_add_book_invalid_json_keys(test_app, monkeypatch):
     client = test_app.test_client()
     resp = client.post(
-        "/books",
+        "/api/books",
         data=json.dumps({"author": "john@testdriven.io"}),
         content_type="application/json",
     )
@@ -65,7 +65,7 @@ def test_add_book_duplicate_title(test_app, monkeypatch):
     monkeypatch.setattr(src.api.books, "add_book", mock_add_book)
     client = test_app.test_client()
     resp1 = client.post(
-        "/books",
+        "/api/books",
         data=json.dumps({"title": "Cooked", "author": "Michael Pollan"}),
         content_type="application/json",
     )
@@ -73,7 +73,7 @@ def test_add_book_duplicate_title(test_app, monkeypatch):
     data1 = json.loads(resp1.data.decode())
     print(data1)
     resp2 = client.post(
-        "/books",
+        "/api/books",
         data=json.dumps({"title": "Cooked", "author": "Michael Pollan"}),
         content_type="application/json",
     )
@@ -94,7 +94,7 @@ def test_single_book(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.books, "get_book_by_id", mock_get_book_by_id)
     client = test_app.test_client()
-    resp = client.get("/books/0787133b-cb55-4a31-9480-1e04b7b72898")
+    resp = client.get("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 200
     assert "jeffrey" in data["title"]
@@ -107,7 +107,7 @@ def test_single_book_incorrect_id(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.books, "get_book_by_id", mock_get_book_by_id)
     client = test_app.test_client()
-    resp = client.get("/books/0787133b-cb55-4a31-9480-1e04b7b72898")
+    resp = client.get("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 404
     assert "Book 0787133b-cb55-4a31-9480-1e04b7b72898 does not exist" in data["message"]
@@ -132,7 +132,7 @@ def test_all_books(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.books, "get_all_books", mock_get_all_books)
     client = test_app.test_client()
-    resp = client.get("/books")
+    resp = client.get("/api/books")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 200
     assert len(data) == 2
@@ -165,7 +165,7 @@ def test_remove_book(test_app, monkeypatch):
     monkeypatch.setattr(src.api.books, "get_book_by_id", mock_get_book_by_id)
     monkeypatch.setattr(src.api.books, "delete_book", mock_delete_book)
     client = test_app.test_client()
-    resp_two = client.delete("/books/0787133b-cb55-4a31-9480-1e04b7b72898")
+    resp_two = client.delete("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
     assert "book-to-be-removed was removed!" in data["message"]
@@ -177,7 +177,7 @@ def test_remove_book_incorrect_id(test_app, monkeypatch):
 
     monkeypatch.setattr(src.api.books, "get_book_by_id", mock_get_book_by_id)
     client = test_app.test_client()
-    resp = client.delete("/books/0787133b-cb55-4a31-9480-1e04b7b72898")
+    resp = client.delete("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 404
     assert "Book 0787133b-cb55-4a31-9480-1e04b7b72898 does not exist" in data["message"]
@@ -211,14 +211,14 @@ def test_update_book(test_app, monkeypatch):
     monkeypatch.setattr(src.api.books, "update_book", mock_update_book)
     client = test_app.test_client()
     resp_one = client.put(
-        "/books/0787133b-cb55-4a31-9480-1e04b7b72898",
+        "/api/books/0787133b-cb55-4a31-9480-1e04b7b72898",
         data=json.dumps({"title": "me", "author": "me@testdriven.io"}),
         content_type="application/json",
     )
     data = json.loads(resp_one.data.decode())
     assert resp_one.status_code == 200
     assert "0787133b-cb55-4a31-9480-1e04b7b72898 was updated!" in data["message"]
-    resp_two = client.get("/books/0787133b-cb55-4a31-9480-1e04b7b72898")
+    resp_two = client.get("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
     assert "me" in data["title"]
@@ -257,7 +257,7 @@ def test_update_book_invalid(
     monkeypatch.setattr(src.api.books, "get_book_by_id", mock_get_book_by_id)
     client = test_app.test_client()
     resp = client.put(
-        f"/books/{book_id}",
+        f"/api/books/{book_id}",
         data=json.dumps(payload),
         content_type="application/json",
     )
@@ -294,7 +294,7 @@ def test_update_book_duplicate_author(test_app, monkeypatch):
     monkeypatch.setattr(src.api.books, "update_book", mock_update_book)
     client = test_app.test_client()
     resp = client.put(
-        "/books/0787133b-cb55-4a31-9480-1e04b7b72898",
+        "/api/books/0787133b-cb55-4a31-9480-1e04b7b72898",
         data=json.dumps({"title": "me", "author": "me@testdriven.io"}),
         content_type="application/json",
     )
