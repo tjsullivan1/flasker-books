@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements.dev.txt
       - name: Test with pytest
         run: |
-            python -m pytest "src/tests" -p no:warnings -cov=com --cov-report=xml --cov-report=html
+            python -m pytest "tests" -p no:warnings -cov=com --cov-report=xml --cov-report=html
             python -m flake8 src
             python -m black src --check
             python -m isort src --check-only
