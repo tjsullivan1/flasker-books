@@ -27,6 +27,11 @@ def create_app(script_info=None):
 
     app.logger.debug(f"Starting Booker app -- name is {__name__}")
 
+    # set up views BEFORE api to ensure that '/' routes correctly -- https://github.com/python-restx/flask-restx/issues/452#issuecomment-1526394501 # noqa
+    from src.views import home
+
+    app.register_blueprint(home.blueprint)
+
     # set up extensions
     db.init_app(app)
 
@@ -34,10 +39,6 @@ def create_app(script_info=None):
     from src.api import api
 
     api.init_app(app)
-
-    from src.views import home
-
-    app.register_blueprint(home.blueprint)
 
     # shell context for flask cli
     @app.shell_context_processor
