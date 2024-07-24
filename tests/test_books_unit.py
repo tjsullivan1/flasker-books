@@ -1,8 +1,8 @@
 # src/tests/test_books_unit.py
 
-
 import json
 from datetime import datetime
+from http import HTTPStatus
 
 import pytest
 
@@ -26,7 +26,7 @@ def test_add_book(test_app, monkeypatch):
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 201
+    assert resp.status_code == HTTPStatus.CREATED
     assert "Cooked was added!" in data["message"]
 
 
@@ -38,7 +38,7 @@ def test_add_book_invalid_json(test_app):
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
     assert "Input payload validation failed" in data["message"]
 
 
@@ -50,7 +50,7 @@ def test_add_book_invalid_json_keys(test_app, monkeypatch):
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.BAD_REQUEST
     assert "Input payload validation failed" in data["message"]
 
 
@@ -79,7 +79,7 @@ def test_add_book_duplicate_title(test_app, monkeypatch):
     )
     data2 = json.loads(resp2.data.decode())
     print(data2)
-    assert resp2.status_code == 400
+    assert resp2.status_code == HTTPStatus.CONFLICT
     assert "Sorry. That title already exists." in data2["message"]
 
 
@@ -96,7 +96,7 @@ def test_single_book(test_app, monkeypatch):
     client = test_app.test_client()
     resp = client.get("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert "jeffrey" in data["title"]
     assert "jeffrey@testdriven.io" in data["author"]
 
@@ -109,7 +109,7 @@ def test_single_book_incorrect_id(test_app, monkeypatch):
     client = test_app.test_client()
     resp = client.get("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 404
+    assert resp.status_code == HTTPStatus.NOT_FOUND
     assert "Book 0787133b-cb55-4a31-9480-1e04b7b72898 does not exist" in data["message"]
 
 
@@ -134,7 +134,7 @@ def test_all_books(test_app, monkeypatch):
     client = test_app.test_client()
     resp = client.get("/api/books")
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assert len(data) == 2
     assert "michael" in data[0]["title"]
     assert "michael@mherman.org" in data[0]["author"]
@@ -167,7 +167,7 @@ def test_remove_book(test_app, monkeypatch):
     client = test_app.test_client()
     resp_two = client.delete("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp_two.data.decode())
-    assert resp_two.status_code == 200
+    assert resp_two.status_code == HTTPStatus.OK
     assert "book-to-be-removed was removed!" in data["message"]
 
 
@@ -179,7 +179,7 @@ def test_remove_book_incorrect_id(test_app, monkeypatch):
     client = test_app.test_client()
     resp = client.delete("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 404
+    assert resp.status_code == HTTPStatus.NOT_FOUND
     assert "Book 0787133b-cb55-4a31-9480-1e04b7b72898 does not exist" in data["message"]
 
 
@@ -216,11 +216,11 @@ def test_update_book(test_app, monkeypatch):
         content_type="application/json",
     )
     data = json.loads(resp_one.data.decode())
-    assert resp_one.status_code == 200
+    assert resp_one.status_code == HTTPStatus.OK
     assert "0787133b-cb55-4a31-9480-1e04b7b72898 was updated!" in data["message"]
     resp_two = client.get("/api/books/0787133b-cb55-4a31-9480-1e04b7b72898")
     data = json.loads(resp_two.data.decode())
-    assert resp_two.status_code == 200
+    assert resp_two.status_code == HTTPStatus.OK
     assert "me" in data["title"]
     assert "me@testdriven.io" in data["author"]
 
@@ -231,19 +231,19 @@ def test_update_book(test_app, monkeypatch):
         [
             "0787133b-cb55-4a31-9480-1e04b7b72899",
             {},
-            400,
+            HTTPStatus.BAD_REQUEST,
             "Input payload validation failed",
         ],
         [
             "0787133b-cb55-4a31-9480-1e04b7b72897",
             {"tite": "Invalid Title"},
-            400,
+            HTTPStatus.BAD_REQUEST,
             "Input payload validation failed",
         ],
         [
             "0787133b-cb55-4a31-9480-1e04b7b72898",
             {"title": "me", "author": "me@testdriven.io"},
-            404,
+            HTTPStatus.NOT_FOUND,
             "Book 0787133b-cb55-4a31-9480-1e04b7b72898 does not exist",
         ],
     ],
@@ -299,5 +299,5 @@ def test_update_book_duplicate_author(test_app, monkeypatch):
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())
-    assert resp.status_code == 400
+    assert resp.status_code == HTTPStatus.CONFLICT
     assert "Sorry. That book already exists." in data["message"]

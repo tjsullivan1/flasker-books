@@ -1,5 +1,6 @@
 # src/api/users.py
 
+from http import HTTPStatus
 
 from flask import request
 from flask_restx import Namespace, Resource, fields
@@ -44,11 +45,11 @@ class BookList(Resource):
     @books_ns.marshal_with(book, as_list=True)
     def get(self):
         """Returns all books"""
-        return get_all_books(), 200
+        return get_all_books(), HTTPStatus.OK
 
     @books_ns.expect(book, validate=True)
-    @books_ns.response(201, "<title> was added!")
-    @books_ns.response(400, "Sorry. That title already exists.")
+    @books_ns.response(HTTPStatus.CREATED, "<title> was added!")
+    @books_ns.response(HTTPStatus.CONFLICT, "Sorry. That title already exists.")
     def post(self):
         """Creates a new book."""
         post_data = request.get_json()
@@ -59,45 +60,45 @@ class BookList(Resource):
         book = get_book_by_title(title)
         if book:
             response_object["message"] = "Sorry. That title already exists."
-            return response_object, 400
+            return response_object, HTTPStatus.CONFLICT
 
         add_book(title, author)
 
         response_object["message"] = f"{title} was added!"
-        return response_object, 201
+        return response_object, HTTPStatus.CREATED
 
 
 class Books(Resource):
 
     @books_ns.marshal_with(book)
-    @books_ns.response(200, "Success")
-    @books_ns.response(404, "Book <book_id> does not exist")
+    @books_ns.response(HTTPStatus.OK, "Success")
+    @books_ns.response(HTTPStatus.NOT_FOUND, "Book <book_id> does not exist")
     def get(self, book_id):
         """Returns a single book"""
         book = get_book_by_id(book_id)
         if not book:
-            books_ns.abort(404, f"Book {book_id} does not exist")
-        return book, 200
+            books_ns.abort(HTTPStatus.NOT_FOUND, f"Book {book_id} does not exist")
+        return book, HTTPStatus.OK
 
-    @books_ns.response(200, "<book_id> was removed!")
-    @books_ns.response(404, "Book <book_id> does not exist")
+    @books_ns.response(HTTPStatus.OK, "<book_id> was removed!")
+    @books_ns.response(HTTPStatus.NOT_FOUND, "Book <book_id> does not exist")
     def delete(self, book_id):
         """Removes a single book"""
         response_object = {}
         book = get_book_by_id(book_id)
 
         if not book:
-            books_ns.abort(404, f"Book {book_id} does not exist")
+            books_ns.abort(HTTPStatus.NOT_FOUND, f"Book {book_id} does not exist")
 
         delete_book(book)
 
         response_object["message"] = f"{book.title} was removed!"
-        return response_object, 200
+        return response_object, HTTPStatus.OK
 
     @books_ns.expect(book, validate=True)
-    @books_ns.response(200, "<book_id> was updated!")
-    @books_ns.response(404, "Book <book_id> does not exist")
-    @books_ns.response(400, "Sorry. That book already exists.")
+    @books_ns.response(HTTPStatus.OK, "<book_id> was updated!")
+    @books_ns.response(HTTPStatus.NOT_FOUND, "Book <book_id> does not exist")
+    @books_ns.response(HTTPStatus.CONFLICT, "Sorry. That book already exists.")
     def put(self, book_id):
         """Updates a book"""
         post_data = request.get_json()
@@ -107,16 +108,16 @@ class Books(Resource):
 
         book = get_book_by_id(book_id)
         if not book:
-            books_ns.abort(404, f"Book {book_id} does not exist")
+            books_ns.abort(HTTPStatus.NOT_FOUND, f"Book {book_id} does not exist")
 
         if get_book_by_title(title):
             response_object["message"] = "Sorry. That book already exists."
-            return response_object, 400
+            return response_object, HTTPStatus.CONFLICT
 
         update_book(book, title, author)
 
         response_object["message"] = f"{book.id} was updated!"
-        return response_object, 200
+        return response_object, HTTPStatus.OK
 
 
 books_ns.add_resource(BookList, "")
