@@ -120,4 +120,5 @@ class Books(Resource):
 
 
 books_namespace.add_resource(BookList, "")
+# TODO: I think that string: can be replaced with uuid:
 books_namespace.add_resource(Books, "/<string:book_id>")

@@ -33,6 +33,10 @@ def create_app(script_info=None):
     def index():
         return "Hello World!"
 
+    @app.route("/stocks/")
+    def stocks():
+        return "<h2>Stock List...</h2>"
+
     # shell context for flask cli
     @app.shell_context_processor
     def ctx():
