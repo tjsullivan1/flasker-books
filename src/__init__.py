@@ -21,6 +21,12 @@ def create_app(script_info=None):
     app_settings = os.getenv("APP_SETTINGS")
     app.config.from_object(app_settings)
 
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    app.logger.setLevel(LOG_LEVEL)
+    app.logger.info(f"Starting Booker app -- log level: {LOG_LEVEL}")
+
+    app.logger.debug(f"Starting Booker app -- name is {__name__}")
+
     # set up extensions
     db.init_app(app)
 
