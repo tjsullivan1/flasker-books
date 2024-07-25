@@ -20,22 +20,37 @@ from src.api.crud import (  # isort:skip
 books_ns = Namespace("books")
 
 
+class NullableString(fields.String):
+    __schema_type__ = ["string", "null"]
+    __schema_example__ = "nullable string"
+
+
+# class NullableInt(fields.Integer):
+#     __schema_type__ = ['integer', 'null']
+#     __schema_example__ = 'nullable integer'
+
+
+# class NullableDateTime(fields.DateTime):
+#     __schema_type__ = ['string', 'null']
+#     __schema_example__ = 'nullable string'
+
+
 book = books_ns.model(
     "Book",
     {
         "id": fields.String(readOnly=True),
         "title": fields.String(required=True),
-        "author": fields.String,
-        "genre": fields.String,
-        "date_added": fields.DateTime,
-        "priority": fields.String,
-        "referred_by": fields.String,
-        "status": fields.String,
-        "category": fields.String,
-        "notes": fields.String,
-        "type_read": fields.String,
-        "rating": fields.Integer,
-        "date_read": fields.DateTime,
+        "author": NullableString,
+        "genre": NullableString,
+        "date_added": NullableString,  # TODO: Ideally this would be a datetime
+        "priority": NullableString,
+        "referred_by": NullableString,
+        "status": NullableString,
+        "category": NullableString,
+        "notes": NullableString,
+        "type_read": NullableString,
+        "rating": NullableString,  # TODO: Ideally this would be an integer
+        "date_read": NullableString,  # TODO: Ideally this would be a datetime
     },
 )
 
@@ -101,20 +116,44 @@ class Books(Resource):
     @books_ns.response(HTTPStatus.CONFLICT, "Sorry. That book already exists.")
     def put(self, book_id):
         """Updates a book"""
-        post_data = request.get_json()
-        author = post_data.get("author")
-        title = post_data.get("title")
         response_object = {}
 
         book = get_book_by_id(book_id)
         if not book:
             books_ns.abort(HTTPStatus.NOT_FOUND, f"Book {book_id} does not exist")
 
+        post_data = request.get_json()
+
+        title = post_data.get("title")
+        author = post_data.get("author", book.author)
+        genre = post_data.get("genre", book.genre)
+        priority = post_data.get("priority", book.priority)
+        referred_by = post_data.get("referred_by", book.referred_by)
+        status = post_data.get("status", book.status)
+        category = post_data.get("category", book.category)
+        notes = post_data.get("notes", book.notes)
+        type_read = post_data.get("type_read", book.type_read)
+        rating = post_data.get("rating", book.rating)
+        date_read = post_data.get("date_read", book.date_read)
+
         if get_book_by_title(title):
             response_object["message"] = "Sorry. That book already exists."
             return response_object, HTTPStatus.CONFLICT
 
-        update_book(book, title, author)
+        update_book(
+            book,
+            title,
+            author,
+            genre,
+            priority,
+            referred_by,
+            status,
+            category,
+            notes,
+            type_read,
+            rating,
+            date_read,
+        )
 
         response_object["message"] = f"{book.id} was updated!"  # type: ignore -- I think this is necessary because a NoneType should not be returned - if it were, we would catch it with the NOT_FOUND error. # noqa: E501
         return response_object, HTTPStatus.OK

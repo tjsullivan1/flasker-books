@@ -196,11 +196,33 @@ def test_update_book(test_app, monkeypatch):
                 "id": "0787133b-cb55-4a31-9480-1e04b7b72898",
                 "title": "me",
                 "author": "me@testdriven.io",
+                "genre": "",
+                "priority": "",
+                "referred_by": "",
+                "status": "",
+                "category": "",
+                "notes": "",
+                "type_read": "",
+                "rating": "",
+                "date_read": "",
             }
         )
         return d
 
-    def mock_update_book(book, title, author):
+    def mock_update_book(
+        book,
+        title,
+        author,
+        genre,
+        priority,
+        referred_by,
+        status,
+        category,
+        notes,
+        type_read,
+        rating,
+        date_read,
+    ):
         return True
 
     def mock_get_book_by_title(title):
@@ -279,11 +301,33 @@ def test_update_book_duplicate_author(test_app, monkeypatch):
                 "id": "0787133b-cb55-4a31-9480-1e04b7b72898",
                 "title": "me",
                 "author": "me@testdriven.io",
+                "genre": "",
+                "priority": "",
+                "referred_by": "",
+                "status": "",
+                "category": "",
+                "notes": "",
+                "type_read": "",
+                "rating": "",
+                "date_read": "",
             }
         )
         return d
 
-    def mock_update_book(book, title, author):
+    def mock_update_book(
+        book,
+        title,
+        author,
+        genre,
+        priority,
+        referred_by,
+        status,
+        category,
+        notes,
+        type_read,
+        rating,
+        date_read,
+    ):
         return True
 
     def mock_get_book_by_title(author):
