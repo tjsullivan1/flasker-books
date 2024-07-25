@@ -92,7 +92,7 @@ class Books(Resource):
 
         delete_book(book)
 
-        response_object["message"] = f"{book.title} was removed!"
+        response_object["message"] = f"{book.title} was removed!"  # type: ignore -- we abort ahead of time with a 404 if the book does not exist, so this should never be None # noqa: E501
         return response_object, HTTPStatus.OK
 
     @books_ns.expect(book, validate=True)
@@ -116,7 +116,7 @@ class Books(Resource):
 
         update_book(book, title, author)
 
-        response_object["message"] = f"{book.id} was updated!"
+        response_object["message"] = f"{book.id} was updated!"  # type: ignore -- I think this is necessary because a NoneType should not be returned - if it were, we would catch it with the NOT_FOUND error. # noqa: E501
         return response_object, HTTPStatus.OK
 
 
